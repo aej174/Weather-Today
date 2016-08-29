@@ -11,9 +11,10 @@ import UIKit
 class ViewController: UIViewController {
     
     @IBOutlet var cityTextField: UITextField!    
-    @IBOutlet var descriptionLabel: UILabel!
-    @IBOutlet var temperatureLabel: UILabel!
+    @IBOutlet var descriptionLabel: UILabel!    
     @IBOutlet var pressureLabel: UILabel!
+    @IBOutlet var temperatureLabel: UILabel!
+    @IBOutlet var humidityLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,21 +37,27 @@ class ViewController: UIViewController {
                     do {
                         
                         let jsonResult = try JSONSerialization.jsonObject(with: urlContent, options: JSONSerialization.ReadingOptions.mutableContainers) as AnyObject
-                        print(jsonResult)
+                        //print(jsonResult)
+                        print(jsonResult["main"])
                         print(jsonResult["name"])
                         if let description = ((jsonResult["weather"] as! NSArray)[0] as! NSDictionary)["description"] as? String {
                             DispatchQueue.main.sync(execute: {
                                 self.descriptionLabel.text = description
                             })
                         }
-                        if let temperature = ((jsonResult["main"] as! NSDictionary)[2] as! NSDictionary)["temp"] as? String {
+                        if let temperature = (jsonResult["main"] as? NSDictionary)!["temp"] as? Float {
                             DispatchQueue.main.sync(execute: {
-                                self.temperatureLabel.text = temperature
+                                self.temperatureLabel.text = "\((temperature - 273.16) * 1.8 + 32.0)"
                             })
                         }
-                        if let pressure = ((jsonResult["main"] as! NSDictionary)[1] as! NSDictionary)["pressure"] as? Int {
+                        if let pressure = (jsonResult["main"] as? NSDictionary)!["pressure"] as? Int {
                                 DispatchQueue.main.sync(execute: {
                                 self.pressureLabel.text = "\(pressure)"
+                            })
+                        }
+                        if let humidity = (jsonResult["main"] as? NSDictionary)!["humidity"] as? Int {
+                            DispatchQueue.main.sync(execute: {
+                                self.humidityLabel.text = "\(humidity)"
                             })
                         }
                     }
